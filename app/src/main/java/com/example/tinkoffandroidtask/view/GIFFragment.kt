@@ -1,12 +1,17 @@
-package com.example.tinkoffandroidtask
+package com.example.tinkoffandroidtask.view
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.example.tinkoffandroidtask.R
+import com.example.tinkoffandroidtask.model.GIFInfo
+import com.example.tinkoffandroidtask.presenter.Presenter
 import kotlinx.android.synthetic.main.fragment_gif.*
+import java.net.URL
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,15 +22,12 @@ private const val ARG_PARAM1 = "param1"
  * Use the [GIFFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class GIFFragment : Fragment() {
-    // TODO: Rename and change type of parameter
-    private var param1: String? = null
+class GIFFragment : Fragment(), Presenter.View {
+
+    private val presenter: Presenter = Presenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-        }
     }
 
     override fun onCreateView(
@@ -38,26 +40,14 @@ class GIFFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Glide.with(this)
-            .load(R.drawable.earth)
-            .into(gif)
+        presenter.getNextGIF()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @return A new instance of fragment GIFFragment.
-         */
-        // TODO: Rename and change type of parameter
-        @JvmStatic
-        fun newInstance(param1: String) =
-            GIFFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                }
-            }
+    override fun setGIF(Gif: GIFInfo) {
+        gif_description.text = Gif.description
+        Glide.with(this)
+            .load(Gif.gifURL)
+            .error(R.drawable.error)
+            .into(gifImageView)
     }
 }
